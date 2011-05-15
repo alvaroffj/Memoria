@@ -1,4 +1,3 @@
-
 package Controlador;
 
 import Modelo.SA;
@@ -16,11 +15,13 @@ import java.io.PrintWriter;
 import java.util.LinkedList;
 import java.util.List;
 
+//este es un comentario
 /**
  * 
  * @author Alvaro
  */
 public class CPrincipal {
+
     File log;
     SA sa;
     Problema problema;
@@ -34,7 +35,7 @@ public class CPrincipal {
         this.problema.cargarDatos();
         this.run(1000, 10, 0.8);
     }
-    
+
     /**
      * 
      * @param ti temperatura de inicio
@@ -43,7 +44,7 @@ public class CPrincipal {
      */
     public void run(int ti, int tf, double en) {
         System.out.println("CPrincipal: run");
-        this.log = new File("../logs/log_"+ti+"_"+tf+"_"+en+".txt");
+        this.log = new File("../logs/log_" + ti + "_" + tf + "_" + en + ".txt");
         this.sa = new SA(this);
         this.sa.setPorcEnfriamiento(en);
         this.sa.setTempInicial(ti);
@@ -65,8 +66,8 @@ public class CPrincipal {
             fW = new FileWriter(this.log, true);
             bW = new BufferedWriter(fW);
             salida = new PrintWriter(bW);
-            for(i = 0; i<l; i++) {
-                salida.println(t+"\t"+costo.get(i).toString().substring(0,costo.get(i).toString().length()-2));
+            for (i = 0; i < l; i++) {
+                salida.println(t + "\t" + costo.get(i).toString().substring(0, costo.get(i).toString().length() - 2));
             }
             salida.close();
             bW.close();
@@ -75,5 +76,4 @@ public class CPrincipal {
         } catch (IOException e) {
         }
     }
-
 }
