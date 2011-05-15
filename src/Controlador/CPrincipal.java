@@ -18,7 +18,7 @@ import java.util.List;
 
 /**
  * 
- * @author Alvaro
+ * @author Alvaro Flores
  */
 public class CPrincipal {
     File log;
