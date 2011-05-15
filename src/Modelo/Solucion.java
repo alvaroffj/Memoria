@@ -5,7 +5,6 @@ import java.util.Random;
 import java.util.Vector;
 
 public class Solucion {
-//lala
     CPrincipal control;
     Vector<Vector> plan;
     Double costo;
