@@ -1,4 +1,3 @@
-
 package Modelo;
 
 import Controlador.CPrincipal;
@@ -6,6 +5,10 @@ import java.util.LinkedList;
 import java.util.Random;
 import java.util.List;
 
+/**
+ * 
+ * @author Alvaro
+ */
 public class SA {
     CPrincipal control;
     Solucion solucion;
@@ -26,46 +29,46 @@ public class SA {
      * Ejecuta el proceso principal de Simulated Annealing
      */
     public void run() {
-        Solucion vecino = new Solucion(this.control);
-        this.temp = this.tempInicial;
-        int N, n = 0;
-        double fvec, fact;
+//        Solucion vecino = new Solucion(this.control);
+//        this.temp = this.tempInicial;
+//        int N, n = 0;
+//        double fvec, fact;
         
         this.solucion.generar(); //SE GENERA LA SOLUCION INICIAL
 
-        System.out.println("Costo Inicial: "+this.solucion.evaluar());
-        System.out.println("T: "+this.temp);
-        while(this.temp>this.tempFinal) {
-            this.costo = new LinkedList();
-            N = this.N(this.temp);
-            n = 0;
-            while(n<N) {
-                vecino = this.solucion.genVecino();
-                this.mejor = new Solucion(this.control);
-                fact = this.solucion.evaluar();
-                fvec = vecino.evaluar();
-                this.mejor = this.solucion;
-                if(fvec < fact) {
-                    this.mejor = vecino;
-                    this.solucion = vecino;
-                    this.costo.add(fvec);
-                } else {
-                    seed = new Random();
-                    if(seed.nextDouble() < Math.exp(-(Math.abs(fact-fvec)/this.temp))) {
-                        this.solucion = vecino;
-                        this.costo.add(fvec);
-                    } else {
-                        this.costo.add(fact);
-                    }
-                }
-                n++;
-            }
-            this.control.grabar(this.temp, this.costo);
-            this.temp=(int)(this.porcEnfriamiento*this.temp);
-            System.out.println("T: "+this.temp);
-        }
-        System.out.println("Costo Final: "+this.solucion.evaluar());
-        System.out.println("Costo Menor: "+this.mejor.evaluar());
+//        System.out.println("Costo Inicial: "+this.solucion.evaluar());
+//        System.out.println("T: "+this.temp);
+//        while(this.temp>this.tempFinal) {
+//            this.costo = new LinkedList();
+//            N = this.N(this.temp);
+//            n = 0;
+//            while(n<N) {
+//                vecino = this.solucion.genVecino();
+//                this.mejor = new Solucion(this.control);
+//                fact = this.solucion.evaluar();
+//                fvec = vecino.evaluar();
+//                this.mejor = this.solucion;
+//                if(fvec < fact) {
+//                    this.mejor = vecino;
+//                    this.solucion = vecino;
+//                    this.costo.add(fvec);
+//                } else {
+//                    seed = new Random();
+//                    if(seed.nextDouble() < Math.exp(-(Math.abs(fact-fvec)/this.temp))) {
+//                        this.solucion = vecino;
+//                        this.costo.add(fvec);
+//                    } else {
+//                        this.costo.add(fact);
+//                    }
+//                }
+//                n++;
+//            }
+//            this.control.grabar(this.temp, this.costo);
+//            this.temp=(int)(this.porcEnfriamiento*this.temp);
+//            System.out.println("T: "+this.temp);
+//        }
+//        System.out.println("Costo Final: "+this.solucion.evaluar());
+//        System.out.println("Costo Menor: "+this.mejor.evaluar());
     }
 
     /**

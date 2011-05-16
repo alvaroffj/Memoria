@@ -48,7 +48,7 @@ public class CPrincipal {
         this.sa.setPorcEnfriamiento(en);
         this.sa.setTempInicial(ti);
         this.sa.setTempFinal(tf);
-//        this.sa.run();
+        this.sa.run();
     }
 
     /**
@@ -74,5 +74,9 @@ public class CPrincipal {
         } catch (FileNotFoundException e) {
         } catch (IOException e) {
         }
+    }
+
+    public Problema getProblema() {
+        return problema;
     }
 }

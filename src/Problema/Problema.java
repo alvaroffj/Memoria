@@ -13,7 +13,7 @@ import java.util.List;
  * @author alvaro
  */
 public class Problema {
-    List recorridos, buses, choferes;
+    public List recorridos, buses, choferes;
     CPrincipal control;
 
     public Problema(CPrincipal cp) {
@@ -22,11 +22,13 @@ public class Problema {
 
 
     /**
-     *
+     * Gestiona la carga de todos los archivos necesarios para el funcionamiento del algoritmo
      */
     public void cargarDatos() {
         System.out.println("Problema: cargarDatos INI");
-        this.cargaRecorridos("../cargar/110.pmt");
+        this.cargaRecorridos("cargar/recorridos.pmt");
+        this.cargaBuses("cargar/buses.pmt");
+        this.cargaChoferes("cargar/choferes.pmt");
         System.out.println("Problema: cargarDatos FIN");
     }
 
