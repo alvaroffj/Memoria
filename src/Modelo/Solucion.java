@@ -1,6 +1,7 @@
 package Modelo;
 
 import Controlador.CPrincipal;
+import Problema.Chofer;
 import Problema.Dia;
 import Problema.Problema;
 import Problema.Recorrido;
@@ -29,30 +30,29 @@ public class Solucion {
         System.out.println("Solucion: Generar INI");
         Problema p = this.control.getProblema();
         List re = p.recorridos;
-        List ch = p.choferes;
+        List<Chofer>ch = p.choferes;
         List bu = p.buses;
         int nRe = re.size();
-        
+        Chofer cAux;
+        int[] chAux;
         this.plan = new Dia[7];
         for(int i=0; i<7; i++) {
             Dia dAux = new Dia();
+            Recorrido rAux = new Recorrido();
             for(int j=0; j<nRe; j++) {
-                String[] aux = (String[]) re.get(j);
-                Recorrido rAux = new Recorrido(j);
-                String[] pu = new String[2];
-                String[] ho = new String[2];
-                
-                pu[0] = aux[1];
-                pu[1] = aux[2];
-                
-                ho[0] = aux[3];
-                ho[1] = aux[4];
-                
-                rAux.setPuntos(pu);
-                rAux.setHorario(ho);
-                dAux.addRecorrido(rAux);
+                int[] r = new int[3];
+                rAux = (Recorrido)re.get(j);
+                r[0] = rAux.getId();
+                chAux = p.findChoferLibre(i, rAux);
+                if(chAux[0]>=0) {
+                    cAux = ch.get(chAux[0]);
+                    r[1] = cAux.getId();
+                    cAux.addRecorrido(i, chAux[2], rAux, chAux[1]);
+                    dAux.addViaje(r);
+                }
+                //TODO asignar bus
             }
-            plan[i] = dAux;
+            this.plan[i] = dAux;
         }
         System.out.println("Solucion: Generar FIN");
     }

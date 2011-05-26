@@ -8,13 +8,13 @@ import java.util.List;
  * @author Alvaro
  */
 public class Dia {
-    List<Recorrido> plan;
+    List plan;
 
     public Dia() {
         plan = new LinkedList();
     }
     
-    public void addRecorrido(Recorrido r) {
+    public void addViaje(int[] r) {
         plan.add(r);
     }
     
