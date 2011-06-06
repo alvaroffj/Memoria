@@ -42,7 +42,8 @@ public class Chofer {
         int[] aux = new int[2];
         aux[0] = idDT;
         aux[1] = rec.getId();
-        this.plan[dia].add(aux);
+        //TODO revisar que pasa cuando se inserta antes de un recorrido, actualizar deadTrip
+        this.plan[dia].add(pos, aux);
     }
     
     public List getPlanDia(int dia) {
@@ -71,5 +72,22 @@ public class Chofer {
     
     public int getTotalMinDia(int dia) {
         return this.totalMinDia[dia];
+    }
+    
+    public int[] getRecorrido(int idRec, int dia) {
+        List<int[]>dAux = this.plan[dia];
+        int encontrado = 0;
+        int nRec = dAux.size();
+        int i=0;
+        int[] rAux = new int[2];
+        while(encontrado < 1 && i<nRec) {
+            rAux = dAux.get(i);
+            if(rAux[1] == idRec) {
+                encontrado = 1;
+            } else {
+                i++;
+            }
+        }
+        return rAux;
     }
 }

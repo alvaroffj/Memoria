@@ -21,4 +21,8 @@ public class Dia {
     public boolean isValido() {
         return true;
     }
+
+    public List getPlan() {
+        return plan;
+    }
 }

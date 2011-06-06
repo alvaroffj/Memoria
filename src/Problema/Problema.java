@@ -14,11 +14,12 @@ import java.util.List;
  */
 public class Problema {
     public List<Recorrido> recorridos; 
-    public List buses;
-    public List<String[]>depositos;
+    public List<Bus> buses;
+    public List<String[]> depositos;
     public List<Chofer> choferes;
     CPrincipal control;
     public int maxMinCont, maxMinPDia, diasLibres, minMargen;
+    public int hrBus, hrChofer;
 
     public Problema(CPrincipal cp) {
         this.control = cp;
@@ -26,6 +27,8 @@ public class Problema {
         this.maxMinCont = 5 * 60;
         this.maxMinPDia = 8 * 60;
         this.minMargen = 10;
+        this.hrBus = 20000 / 60;
+        this.hrChofer = 10000 / 60;
     }
 
 
@@ -101,9 +104,12 @@ public class Problema {
             String texto;
             String[] txt;
 
+            int i=0;
             while((texto = bR.readLine())!=null) {
                 txt = texto.split("\t");
-                this.buses.add(txt);
+                Bus bAux = new Bus(i, txt[1], txt[2], txt[3]);
+                this.buses.add(bAux);
+                i++;
             }
 
             fR.close();
@@ -170,11 +176,53 @@ public class Problema {
         }
     }
     
+    public int[] findBusLibre(int dia, Recorrido rReq) {
+        int[] r = new int[3];
+        Recorrido rAux;
+        Bus bAux = new Bus();
+        int encontrado = 0;
+        int[] comAux = new int[2];
+        int i=0;
+        int j=0;
+        int nBus = this.buses.size();
+        int isCompatible = 1;
+        
+        while(encontrado<1 && i<nBus) {
+            bAux = this.buses.get(i);
+            List pDia = bAux.getPlanDia(dia);
+            int nRDia = pDia.size();
+            j = 0;
+            if(nRDia > 0) {
+                isCompatible = 1;
+                j = 0;
+                while(isCompatible > 0 && j < nRDia) {
+                    rAux = this.recorridos.get(((int[])pDia.get(j))[1]);
+                    //Revisar compatibilidad con los recorridos siguientes en el plan del bus
+                    comAux = this.isRecCompatible(rAux, rReq);
+                    isCompatible = isCompatible * comAux[0];
+                    j++;
+                }
+                encontrado = isCompatible;
+            } else {
+                encontrado = 1;
+                comAux[1] = this.getDeadTrip(bAux.getDeposito(), rReq.getPuntos()[0]);
+            }
+            if(encontrado<1)
+                i++;
+        }
+        r[0] = (encontrado>0)?i:-1;
+        r[1] = comAux[1];
+        r[2] = j;
+        return r;
+    }
+    
     /**
-     * 
+     * Buscar un chofer disponible para el dia y recorrido solicitado
      * @param dia Dia para el cual se busca chofer
      * @param idRec ID del recorrido para el que se busca chofer
      * @return [id del chofer, id del dead trip, posicion a insertar recorrido en el chofer]
+     * Si el id del chofer es -1, entonces no encontro a chofer
+     * Si el id del dead trip es -1, entonces el chofer se encuentra en el mismo lugar de donde sale el recorrido
      */
     public int[] findChoferLibre(int dia, Recorrido rReq) {
         Chofer cAux = new Chofer();
@@ -191,13 +239,17 @@ public class Problema {
             int nRDia = pDia.size();
             j = 0;
             if(nRDia>0) {
-                //TODO averiguar si el chofer puede realizar el viaje
                 int isCompatible = 1;
-                //TODO no es necesario revisar todos los viajes, basta con uno que no sea compatible
-                for(j=0; j<nRDia; j++) {
+                j = 0;
+                while(isCompatible > 0 && j < nRDia) {
                     rAux = this.recorridos.get(((int[])pDia.get(j))[1]);
-                    comAux = this.isRecCompatible(rAux, rReq, 0, cAux.getTotalMinDia(dia));
+                    comAux = this.isRecCompatible(rAux, rReq);
+                    //Revisar compatibilidad con los recorridos siguientes en el plan del chofer
+                    if(rReq.getTiempo() + cAux.getTotalMinDia(dia) > this.maxMinPDia) {
+                        comAux[0] = 0;
+                    }
                     isCompatible = isCompatible * comAux[0];
+                    j++;
                 }
                 encontrado = (isCompatible>0)?true:false;
             } else {
@@ -213,7 +265,30 @@ public class Problema {
         return r;
     }
     
-    public int[] isRecCompatible(Recorrido a, Recorrido b, int minCont, int minTotal) {
+    /**
+     * Obtiene la diferencia, en minutos, entre 2 horas
+     * @param ini hora inicial en enteros, ej: 05:30 -> 530
+     * @param fin hora final en enteros, ej: 05:30 -> 530
+     * @return minutos entre la hora inicial y final
+     */
+    public int getMinDif(int ini, int fin) {
+        int dif;
+        dif = fin-ini;
+        if(dif>=60)
+            dif -= (int)Math.ceil((float)dif/(float)100)*40;
+        return dif;
+    }
+    
+    /**
+     * Revisa si 2 recorridos son compatibles de realizar
+     * @param a Recorrido base
+     * @param b Recorrido a evaluar
+     * @return [compatibilidad, id  dead trip]
+     * compatibilidad = 1 => compatible
+     * compatibilidad = 0 => no compatible
+     * id dead trip = -1 => no hay dead trip
+     */
+    public int[] isRecCompatible(Recorrido a, Recorrido b) {
         int[] r = new int[2];
         int isCompatible = 0;
         int dif = 0;
@@ -222,16 +297,13 @@ public class Problema {
         if(a.getId() != b.getId()) {
             int[] aH = a.getHorario();
             int[] bH = b.getHorario();
-            //TODO Mejorar el calculo de la diferencia de tiempo
             if(bH[1] < aH[0]) { //antes
                 isCompatible = 1;
-                dif = aH[0]-bH[1];
-                dif -= (int)Math.ceil((float)dif/(float)100)*40;
+                dif = this.getMinDif(bH[1], aH[0]);
                 deadTrip = this.getDeadTrip(b.getPuntos()[1], a.getPuntos()[0]);
             } else if(bH[0] > aH[1]) { //despues
                 isCompatible = 1;
-                dif = bH[0]-aH[1];
-                dif -= (int)Math.ceil((float)dif/(float)100)*40;
+                dif = this.getMinDif(aH[1], bH[0]);
                 deadTrip = this.getDeadTrip(a.getPuntos()[1], b.getPuntos()[0]);
             } else {
                 isCompatible = 0;
@@ -243,15 +315,9 @@ public class Problema {
                     tDT = 0;
                 }
                 if(dif > tDT) {
-                    if(dif <= this.minMargen) {
-                        if(minCont + dif < this.maxMinCont && minTotal + b.getTiempo() < this.maxMinPDia) {
-                            isCompatible = 1;
-                        } else isCompatible = 0;
-                    } else {
-                        if(minTotal + b.getTiempo() < this.maxMinPDia) {
-                            isCompatible = 1;
-                        } else isCompatible = 0;
-                    }
+//                    if(minTotal + b.getTiempo() < this.maxMinPDia) {
+                        isCompatible = 1;
+//                    } else isCompatible = 0;
                 } else isCompatible = 0;
             }
         }
@@ -283,5 +349,6 @@ public class Problema {
             return i;
         else return -1;
     }
+    
 }
 

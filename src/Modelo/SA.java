@@ -36,7 +36,7 @@ public class SA {
         
         this.solucion.generar(); //SE GENERA LA SOLUCION INICIAL
 
-//        System.out.println("Costo Inicial: "+this.solucion.evaluar());
+        System.out.println("Costo Inicial: "+this.solucion.costoChoferBus);
 //        System.out.println("T: "+this.temp);
 //        while(this.temp>this.tempFinal) {
 //            this.costo = new LinkedList();
