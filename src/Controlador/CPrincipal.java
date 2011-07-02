@@ -32,6 +32,7 @@ public class CPrincipal {
         System.out.println("CPrincipal");
         this.problema = new Problema(this);
         this.problema.cargarDatos();
+        this.problema.getL();
         this.run(1000, 10, 0.8);
     }
 
@@ -43,12 +44,24 @@ public class CPrincipal {
      */
     public void run(int ti, int tf, double en) {
         System.out.println("CPrincipal: run");
-        this.log = new File("../logs/log_" + ti + "_" + tf + "_" + en + ".txt");
-        this.sa = new SA(this);
-        this.sa.setPorcEnfriamiento(en);
-        this.sa.setTempInicial(ti);
-        this.sa.setTempFinal(tf);
-        this.sa.run();
+//        this.log = new File("../logs/log_" + ti + "_" + tf + "_" + en + ".txt");
+//        this.sa = new SA(this);
+//        this.sa.setPorcEnfriamiento(en);
+//        this.sa.setTempInicial(ti);
+//        this.sa.setTempFinal(tf);
+//        this.sa.run();
+    }
+    
+    public double parseLongitude(double _lon, String d) {
+        if (_lon < 99999.0) {
+            double lon = (double)((long)_lon / 100L); // _lon is always positive here
+            System.out.println(lon);
+            lon += (_lon - (lon * 100.0)) / 60.0;
+            System.out.println(lon);
+            return d.equals("W")? -lon : lon;
+        } else {
+            return 180.0; // invalid longitude
+        }
     }
 
     /**

@@ -17,6 +17,7 @@ public class Problema {
     public List<Bus> buses;
     public List<String[]> depositos;
     public List<Chofer> choferes;
+    public List<List> L; //recorridos compatibles
     CPrincipal control;
     public int maxMinCont, maxMinPDia, diasLibres, minMargen;
     public int hrBus, hrChofer;
@@ -283,10 +284,10 @@ public class Problema {
      * Revisa si 2 recorridos son compatibles de realizar
      * @param a Recorrido base
      * @param b Recorrido a evaluar
-     * @return [compatibilidad, id  dead trip]
+     * @return [compatibilidad, id  deadtrip]
      * compatibilidad = 1 => compatible
      * compatibilidad = 0 => no compatible
-     * id dead trip = -1 => no hay dead trip
+     * id deadtrip = -1 => no hay deadtrip
      */
     public int[] isRecCompatible(Recorrido a, Recorrido b) {
         int[] r = new int[2];
@@ -348,6 +349,29 @@ public class Problema {
         if(encontrado)
             return i;
         else return -1;
+    }
+    
+    public void getL() {
+        this.L = new LinkedList();
+        int n = this.recorridos.size();
+        int[] com = new int[2];
+        int[] tra;
+        Recorrido auxA, auxB;
+        for(int i=0; i<n; i++) {
+            auxA = this.recorridos.get(i);
+            List<int[]> rec = new LinkedList();
+            for(int j=i+1; j<n; j++) {
+                auxB = this.recorridos.get(j);
+                com = this.isRecCompatible(auxA, auxB);
+                if(com[0]==1) { //compatible
+                    tra = new int[2];
+                    tra[0] = auxB.getId();
+                    tra[1] = com[1];
+                    rec.add(tra);
+                }
+            }
+            this.L.add(i, rec);
+        }
     }
     
 }
